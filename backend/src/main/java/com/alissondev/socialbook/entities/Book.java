@@ -3,17 +3,31 @@ package com.alissondev.socialbook.entities;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
+@Entity
+@Table(name = "tb_book")
 public class Book {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
 	private String name;
 	private Date publishing;
 	private String publishingCompany;
 	private String summary;
+	
+	@Transient
 	private List<Comment> comments;
 	private String author;
 	
@@ -24,8 +38,6 @@ public class Book {
 		this.id = id;
 		this.name = name;
 	}
-
-
 
 	public Long getId() {
 		return id;
