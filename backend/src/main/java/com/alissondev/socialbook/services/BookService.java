@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alissondev.socialbook.dto.BookDTO;
 import com.alissondev.socialbook.entities.Book;
 import com.alissondev.socialbook.repositories.BookRepository;
+import com.alissondev.socialbook.services.exceptions.NotFoundException;
 
 @Service
 public class BookService {
@@ -21,5 +22,11 @@ public class BookService {
 	public List<BookDTO> findAll() {		
 		List<Book> list = repository.findAll();		
 		return list.stream().map(x -> new BookDTO(x)).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public BookDTO findById(Long id) {
+		Book book = repository.findById(id).orElseThrow(() -> new NotFoundException("Id " + id + " not found"));
+		return new BookDTO(book);
 	}
 }
