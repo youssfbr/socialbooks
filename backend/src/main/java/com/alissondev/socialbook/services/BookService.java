@@ -3,6 +3,8 @@ package com.alissondev.socialbook.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +28,7 @@ public class BookService {
 
 	@Transactional(readOnly = true)
 	public BookDTO findById(Long id) {
-		Book book = repository.findById(id).orElseThrow(() -> new NotFoundException("Id " + id + " not found"));
+		Book book = repository.findById(id).orElseThrow(() -> new NotFoundException("Unable to find entity with id " + id));
 		return new BookDTO(book);
 	}
 
@@ -35,10 +37,31 @@ public class BookService {
 		
 		Book entity = new Book();
 		entity.setName(dto.getName());
+		entity.setPublishing(dto.getPublishing());
 		entity.setPublishingCompany(dto.getPublishingCompany());
+		entity.setSummary(dto.getSummary());
 		entity.setAuthor(dto.getAuthor());				
 		entity = repository.save(entity);
 		
 		return new BookDTO(entity);
 	}
+
+	@Transactional
+	public BookDTO update(Long id, BookDTO dto) {
+		try {
+			Book entity = repository.getOne(id);
+			entity.setName(dto.getName());
+			entity.setPublishing(dto.getPublishing());
+			entity.setPublishingCompany(dto.getPublishingCompany());
+			entity.setSummary(dto.getSummary());
+			entity.setAuthor(dto.getAuthor());
+			entity = repository.save(entity);
+			
+			return new BookDTO(entity);
+		} 
+		catch (EntityNotFoundException e) {
+			throw new NotFoundException("Unable to find entity with id " + id);
+		}				
+	}
+	
 }
